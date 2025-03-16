@@ -1,4 +1,4 @@
-import { Restaurant } from './types';
+import { Restaurant } from '../types';
 
 interface PlaceResult {
   id: string;
@@ -47,7 +47,7 @@ export const findNearbyRestaurants = async (
     console.log('Fetching restaurants...');
     console.log('Using coordinates:', { latitude, longitude });
     
-    const endpoint = 'https://places.googleapis.com/v1/places:searchText';
+    const endpoint = 'https://places.googleapis.com/v1/places:searchNearby';
     
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -57,9 +57,9 @@ export const findNearbyRestaurants = async (
         'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel,places.id'
       },
       body: JSON.stringify({
-        textQuery: `restaurants near ${latitude},${longitude}`,
+        includedTypes: ['restaurant'],
         maxResultCount: 20,
-        locationBias: {
+        locationRestriction: {
           circle: {
             center: {
               latitude: latitude,
