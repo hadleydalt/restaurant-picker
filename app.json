@@ -9,12 +9,22 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cyberlily.wheelofmeals",
+      "config": {
+        "googleMapsApiKey": "${process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY}"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.cyberlily.wheelofmeals",
+      "config": {
+        "googleMaps": {
+          "apiKey": "${process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY}"
+        }
       }
     },
     "web": {
