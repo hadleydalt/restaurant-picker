@@ -36,6 +36,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ef8a0fe9-81b7-470a-8a8b-1682c35b81bf"
+      }
+    },
+    "owner": "cyberlily-dev"
   }
 }
