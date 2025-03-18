@@ -7,4 +7,6 @@ export type Restaurant = {
   address: string;
   priceLevel: string;
   formattedPriceLevel: string;
+  isOpenNow?: boolean;
+  openingHours?: string[];
 }; 

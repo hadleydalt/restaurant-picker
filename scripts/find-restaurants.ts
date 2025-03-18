@@ -9,6 +9,10 @@ interface PlaceResult {
   userRatingCount?: number;
   formattedAddress: string;
   priceLevel?: 'PRICE_LEVEL_FREE' | 'PRICE_LEVEL_INEXPENSIVE' | 'PRICE_LEVEL_MODERATE' | 'PRICE_LEVEL_EXPENSIVE' | 'PRICE_LEVEL_VERY_EXPENSIVE';
+  currentOpeningHours?: {
+    openNow?: boolean;
+    weekdayDescriptions?: string[];
+  };
 }
 
 interface PlacesResponse {
@@ -70,7 +74,7 @@ export const findNearbyRestaurants = async (
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel,places.id'
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel,places.id,places.currentOpeningHours'
       },
       body: JSON.stringify({
         includedTypes: ['restaurant'],
@@ -104,7 +108,11 @@ export const findNearbyRestaurants = async (
       userRatingsTotal: place.userRatingCount || 0,
       address: place.formattedAddress,
       priceLevel: place.priceLevel || 'PRICE_LEVEL_FREE',
-      formattedPriceLevel: formatPriceLevel(place.priceLevel)
+      formattedPriceLevel: formatPriceLevel(place.priceLevel),
+      isOpenNow: place.currentOpeningHours?.openNow,
+      ...(place.currentOpeningHours?.weekdayDescriptions && {
+        openingHours: place.currentOpeningHours.weekdayDescriptions
+      })
     }));
   } catch (error: unknown) {
     console.error('Full error:', error);

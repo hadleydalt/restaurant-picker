@@ -1,4 +1,4 @@
-import { StyleSheet, View, Linking } from 'react-native';
+import { StyleSheet, View, Linking, Text } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/Button';
@@ -13,12 +13,22 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 
 const METERS_TO_MILES = 0.000621371;
 
+const DAYS_OF_WEEK = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday'
+];
+
 export default function HomeScreen() {
   const backgroundColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
   const [loading, setLoading] = useState(false);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
-  const [radius, setRadius] = useState(1500); // Still in meters for API
+  const [radius, setRadius] = useState(1500);
 
   const selectRandomRestaurant = (restaurantList: Restaurant[]) => {
     const randomIndex = Math.floor(Math.random() * restaurantList.length);
@@ -77,6 +87,22 @@ export default function HomeScreen() {
     Linking.openURL(url).catch((err) => console.error('Error opening maps:', err));
   };
 
+  const getTodaysHours = (openingHours?: string[]) => {
+    if (!openingHours?.length) return null;
+    
+    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const todayName = DAYS_OF_WEEK[today];
+    
+    const todaysSchedule = openingHours.find(schedule => 
+      schedule.startsWith(todayName)
+    );
+    
+    if (!todaysSchedule) return null;
+    
+    // Remove the day name from the schedule
+    return todaysSchedule.replace(`${todayName}: `, '');
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
@@ -122,8 +148,22 @@ export default function HomeScreen() {
               Rating: {selectedRestaurant.rating}/5
             </ThemedText>
             <ThemedText style={styles.detail}>
-              {selectedRestaurant.formattedPriceLevel}
+              Price: {selectedRestaurant.formattedPriceLevel}
             </ThemedText>
+          </ThemedView>
+          <ThemedView style={styles.hoursContainer}>
+            <ThemedText style={[styles.detail, styles.openStatus]}>
+              {selectedRestaurant.isOpenNow ? '✓ Open now' : '✗ Closed'}
+            </ThemedText>
+            {getTodaysHours(selectedRestaurant.openingHours) ? (
+              <ThemedText style={styles.hours}>
+                Today: {getTodaysHours(selectedRestaurant.openingHours)}
+              </ThemedText>
+            ) : (
+              <ThemedText style={styles.hours}>
+                Hours not available
+              </ThemedText>
+            )}
           </ThemedView>
           <View style={styles.buttonContainer}>
             <View style={styles.buttonRow}>
@@ -223,5 +263,20 @@ const styles = StyleSheet.create({
   mapButtonContainer: {
     position: 'absolute',
     right: 0,
+  },
+  hoursContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  openStatus: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  hours: {
+    fontSize: 14,
+    opacity: 0.8,
+    marginVertical: 2,
   },
 });
