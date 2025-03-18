@@ -1,4 +1,4 @@
-import { StyleSheet, View, Linking, Text } from 'react-native';
+import { StyleSheet, View, Linking, Text, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/Button';
@@ -103,6 +103,12 @@ export default function HomeScreen() {
     return todaysSchedule.replace(`${todayName}: `, '');
   };
 
+  const getPhotoUrl = (photoReference?: string) => {
+    if (!photoReference) return undefined;
+    const apiKey = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY;
+    return `https://places.googleapis.com/v1/${photoReference}/media?key=${apiKey}&maxHeightPx=400&maxWidthPx=400`;
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedView style={styles.titleContainer}>
@@ -137,6 +143,13 @@ export default function HomeScreen() {
 
       {selectedRestaurant && (
         <ThemedView style={styles.resultContainer}>
+          {selectedRestaurant.photoReference && getPhotoUrl(selectedRestaurant.photoReference) && (
+            <Image
+              source={{ uri: getPhotoUrl(selectedRestaurant.photoReference) }}
+              style={styles.restaurantImage}
+              resizeMode="cover"
+            />
+          )}
           <ThemedText type="subtitle" style={styles.restaurantName}>
             {selectedRestaurant.name}
           </ThemedText>
@@ -278,5 +291,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.8,
     marginVertical: 2,
+  },
+  restaurantImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 16,
   },
 });

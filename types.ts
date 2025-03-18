@@ -9,4 +9,5 @@ export type Restaurant = {
   formattedPriceLevel: string;
   isOpenNow?: boolean;
   openingHours?: string[];
+  photoReference?: string;
 }; 

@@ -13,6 +13,9 @@ interface PlaceResult {
     openNow?: boolean;
     weekdayDescriptions?: string[];
   };
+  photos?: Array<{
+    name: string;
+  }>;
 }
 
 interface PlacesResponse {
@@ -74,7 +77,7 @@ export const findNearbyRestaurants = async (
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel,places.id,places.currentOpeningHours'
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.priceLevel,places.id,places.currentOpeningHours,places.photos'
       },
       body: JSON.stringify({
         includedTypes: ['restaurant'],
@@ -112,7 +115,8 @@ export const findNearbyRestaurants = async (
       isOpenNow: place.currentOpeningHours?.openNow,
       ...(place.currentOpeningHours?.weekdayDescriptions && {
         openingHours: place.currentOpeningHours.weekdayDescriptions
-      })
+      }),
+      photoReference: place.photos?.[0]?.name
     }));
   } catch (error: unknown) {
     console.error('Full error:', error);
