@@ -8,7 +8,7 @@ interface PlaceResult {
   rating?: number;
   userRatingCount?: number;
   formattedAddress: string;
-  priceLevel?: number;
+  priceLevel?: 'PRICE_LEVEL_FREE' | 'PRICE_LEVEL_INEXPENSIVE' | 'PRICE_LEVEL_MODERATE' | 'PRICE_LEVEL_EXPENSIVE' | 'PRICE_LEVEL_VERY_EXPENSIVE';
 }
 
 interface PlacesResponse {
@@ -17,12 +17,28 @@ interface PlacesResponse {
 
 /**
  * Formats the price level to dollar signs
- * @param priceLevel - Number from 0 to 4
- * @returns string of $ symbols
+ * @param priceLevel - String representing the price level from the Places API
+ * @returns string of $ symbols or appropriate text
  */
-const formatPriceLevel = (priceLevel: number | undefined): string => {
+const formatPriceLevel = (priceLevel: string | undefined): string => {
+  console.log("price level:", priceLevel);
   if (priceLevel === undefined) return 'Price not available';
-  return ''.padStart(priceLevel, '$');
+  
+  // Map the API's string values to dollar signs
+  switch (priceLevel) {
+    case 'PRICE_LEVEL_FREE':
+      return 'Free';
+    case 'PRICE_LEVEL_INEXPENSIVE':
+      return '$';
+    case 'PRICE_LEVEL_MODERATE':
+      return '$$';
+    case 'PRICE_LEVEL_EXPENSIVE':
+      return '$$$';
+    case 'PRICE_LEVEL_VERY_EXPENSIVE':
+      return '$$$$';
+    default:
+      return 'Price not available';
+  }
 };
 
 /**
@@ -82,11 +98,12 @@ export const findNearbyRestaurants = async (
 
     return data.places.map((place: PlaceResult): Restaurant => ({
       id: place.id,
+      placeId: place.id,
       name: place.displayName.text,
       rating: place.rating || 0,
       userRatingsTotal: place.userRatingCount || 0,
       address: place.formattedAddress,
-      priceLevel: place.priceLevel || 0,
+      priceLevel: place.priceLevel || 'PRICE_LEVEL_FREE',
       formattedPriceLevel: formatPriceLevel(place.priceLevel)
     }));
   } catch (error: unknown) {

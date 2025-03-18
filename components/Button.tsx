@@ -1,16 +1,29 @@
 import { Pressable, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { ReactNode } from 'react';
 
 interface ButtonProps {
   onPress: () => void;
-  text: string;
+  text: string | ReactNode;
   disabled?: boolean;
 }
 
 export function Button({ onPress, text, disabled }: ButtonProps) {
   const backgroundColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
   const pressedBackgroundColor = useThemeColor({ light: '#0051A8', dark: '#0060BC' }, 'tabIconSelected');
+  const isMinor = typeof text !== 'string';
+
+  const renderContent = () => {
+    if (typeof text === 'string') {
+      return (
+        <ThemedText style={styles.text}>
+          {text}
+        </ThemedText>
+      );
+    }
+    return text;
+  };
 
   return (
     <Pressable
@@ -18,10 +31,10 @@ export function Button({ onPress, text, disabled }: ButtonProps) {
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: pressed ? pressedBackgroundColor : backgroundColor },
+        isMinor ? styles.minorButton : { backgroundColor: pressed ? pressedBackgroundColor : backgroundColor },
         disabled && styles.disabled
       ]}>
-      <ThemedText style={styles.text}>{text}</ThemedText>
+      {renderContent()}
     </Pressable>
   );
 }
@@ -29,10 +42,18 @@ export function Button({ onPress, text, disabled }: ButtonProps) {
 const styles = StyleSheet.create({
   button: {
     paddingHorizontal: 24,
-    paddingVertical: 12,
+    height: 44,
     borderRadius: 8,
     minWidth: 200,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  minorButton: {
+    backgroundColor: 'transparent',
+    minWidth: 44,
+    width: 44,
+    height: 44,
+    paddingHorizontal: 0,
   },
   text: {
     color: '#FFFFFF',
@@ -42,4 +63,4 @@ const styles = StyleSheet.create({
   disabled: {
     opacity: 0.5,
   },
-}); 
+});
