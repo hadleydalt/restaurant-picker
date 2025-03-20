@@ -4,13 +4,15 @@ import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/Button';
 import { getCurrentLocation } from '@/scripts/get-location';
 import { findNearbyRestaurants } from '@/scripts/find-restaurants';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Restaurant } from '@/types';
 import Slider from '@react-native-community/slider';
 import { ChevronLeft } from '@/components/icons/ChevronLeft';
 import { MapArrow } from '@/components/icons/MapArrow';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { LinearGradient }from 'expo-linear-gradient';
+import * as Font from 'expo-font';
+import { useFonts } from 'expo-font';
 
 const METERS_TO_MILES = 0.000621371;
 
@@ -25,6 +27,14 @@ const DAYS_OF_WEEK = [
 ];
 
 export default function HomeScreen() {
+  const [fontsLoaded] = useFonts({
+    'PixelifySans-Regular': require('../../assets/fonts/PixelifySans-VariableFont_wght.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const backgroundColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
   const [loading, setLoading] = useState(false);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -113,8 +123,24 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <LinearGradient colors={['white', 'rgba(187, 208, 234, 0.6)']} style={styles.gradientContainer}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require('../../assets/images/Fork_Knife.png')}
+          style={styles.backgroundImage}
+          resizeMode="contain"
+        />
+        <Image
+          source={require('../../assets/images/Plate.png')}
+          style={styles.overlayImage}
+          resizeMode="contain"
+        />
+      </View>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">🍽️ Wheel of Meals</ThemedText>
+        <View style={styles.titleRow}>
+          <ThemedText type="title" style={styles.bigTextWheel}>WHEEL</ThemedText>
+          <ThemedText type="title" style={styles.smallText}>OF</ThemedText>
+        </View>
+        <ThemedText type="title" style={styles.bigTextMeals}>MEALS</ThemedText>
       </ThemedView>
 
       {!selectedRestaurant && (
@@ -224,6 +250,40 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     marginBottom: 24,
+    padding: 10,
+    width: '100%',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 5,
+  },
+  bigTextWheel: {
+    fontSize: 62,
+    fontFamily: 'PixelifySans-Regular',
+    fontWeight: 'normal',
+    includeFontPadding: true,
+    textAlignVertical: 'center',
+    paddingVertical: 30,
+  },
+  bigTextMeals: {
+    fontSize: 62,
+    fontFamily: 'PixelifySans-Regular',
+    fontWeight: 'normal',
+    includeFontPadding: true,
+    textAlignVertical: 'center',
+    paddingTop: 30,
+    marginTop: -45
+  },
+  smallText: {
+    fontSize: 22,
+    fontFamily: 'PixelifySans-Regular',
+    fontWeight: 'normal',
+    alignSelf: 'flex-end',
+    paddingBottom: 40,
+    includeFontPadding: true,
+    textAlignVertical: 'center',
   },
   searchContainer: {
     width: '100%',
@@ -233,6 +293,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 18,
     marginBottom: 8,
+    fontFamily: 'PixelifySans-Regular',
   },
   slider: {
     width: '80%',
@@ -242,6 +303,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.8,
     fontSize: 16,
+    fontFamily: 'PixelifySans-Regular',
   },
   resultContainer: {
     alignItems: 'center',
@@ -253,6 +315,7 @@ const styles = StyleSheet.create({
   restaurantName: {
     marginBottom: 8,
     textAlign: 'center',
+    fontFamily: 'PixelifySans-Regular',
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -265,6 +328,7 @@ const styles = StyleSheet.create({
   detail: {
     textAlign: 'center',
     marginVertical: 4,
+    fontFamily: 'PixelifySans-Regular',
   },
   buttonContainer: {
     width: '100%',
@@ -295,16 +359,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
+    fontFamily: 'PixelifySans-Regular',
   },
   hours: {
     fontSize: 14,
     opacity: 0.8,
     marginVertical: 2,
+    fontFamily: 'PixelifySans-Regular',
   },
   restaurantImage: {
     width: '100%',
     height: 200,
     borderRadius: 8,
     marginBottom: 16,
+  },
+  imageContainer: {
+    position: 'relative',
+    width: 200,
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+  },
+  overlayImage: {
+    width: '85%',
+    height: '85%',
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '10%',
   },
 });
