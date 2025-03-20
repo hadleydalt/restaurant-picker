@@ -5,6 +5,7 @@ import { Button } from '@/components/Button';
 import { getCurrentLocation } from '@/scripts/get-location';
 import { findNearbyRestaurants } from '@/scripts/find-restaurants';
 import { useState, useCallback } from 'react';
+import React from 'react';
 import { Restaurant } from '@/types';
 import Slider from '@react-native-community/slider';
 import { ChevronLeft } from '@/components/icons/ChevronLeft';
@@ -123,25 +124,29 @@ export default function HomeScreen() {
   return (
     <ThemedView style={styles.container}>
       <LinearGradient colors={['white', 'rgba(187, 208, 234, 0.6)']} style={styles.gradientContainer}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={require('../../assets/images/Fork_Knife.png')}
-          style={styles.backgroundImage}
-          resizeMode="contain"
-        />
-        <Image
-          source={require('../../assets/images/Plate.png')}
-          style={styles.overlayImage}
-          resizeMode="contain"
-        />
-      </View>
-      <ThemedView style={styles.titleContainer}>
-        <View style={styles.titleRow}>
-          <ThemedText type="title" style={styles.bigTextWheel}>WHEEL</ThemedText>
-          <ThemedText type="title" style={styles.smallText}>OF</ThemedText>
-        </View>
-        <ThemedText type="title" style={styles.bigTextMeals}>MEALS</ThemedText>
-      </ThemedView>
+      {!selectedRestaurant && (
+        <>
+          <View style={styles.imageContainer}>
+            <Image
+              source={require('../../assets/images/Fork_Knife.png')}
+              style={styles.backgroundImage}
+              resizeMode="contain"
+            />
+            <Image
+              source={require('../../assets/images/Plate.png')}
+              style={styles.overlayImage}
+              resizeMode="contain"
+            />
+          </View>
+          <ThemedView style={styles.titleContainer}>
+            <Image
+              source={require('../../assets/images/titulo2.png')}
+              style={styles.titleImage}
+              resizeMode="contain"
+            />
+          </ThemedView>
+        </>
+      )}
 
       {!selectedRestaurant && (
         <View style={styles.searchContainer}>
@@ -158,13 +163,15 @@ export default function HomeScreen() {
             step={400}           // ~0.25 mile steps
             value={radius}
             onValueChange={setRadius}
-            minimumTrackTintColor="#007AFF"
-            maximumTrackTintColor="#D8D8D8"
+            minimumTrackTintColor="#647B93"
+            maximumTrackTintColor="rgba(255, 255, 255, 0.7)"
           />
           <Button 
             onPress={handleFindSpot}
             text={loading ? "Finding your next meal..." : "Find me a spot!"}
             disabled={loading}
+            backgroundImage={require('../../assets/images/Button 2.png')}
+            style={{ width: '100%', height: 60 }}
           />
         </View>
       )}
@@ -253,42 +260,15 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '100%',
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 5,
-  },
-  bigTextWheel: {
-    fontSize: 62,
-    fontFamily: 'PixelifySans-Regular',
-    fontWeight: 'normal',
-    includeFontPadding: true,
-    textAlignVertical: 'center',
-    paddingVertical: 30,
-  },
-  bigTextMeals: {
-    fontSize: 62,
-    fontFamily: 'PixelifySans-Regular',
-    fontWeight: 'normal',
-    includeFontPadding: true,
-    textAlignVertical: 'center',
-    paddingTop: 30,
-    marginTop: -45
-  },
-  smallText: {
-    fontSize: 22,
-    fontFamily: 'PixelifySans-Regular',
-    fontWeight: 'normal',
-    alignSelf: 'flex-end',
-    paddingBottom: 40,
-    includeFontPadding: true,
-    textAlignVertical: 'center',
+  titleImage: {
+    width: '80%',
+    height: 120,
   },
   searchContainer: {
     width: '100%',
     alignItems: 'center',
     gap: 16,
+    paddingHorizontal: 20,
   },
   description: {
     fontSize: 18,

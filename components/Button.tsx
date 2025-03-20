@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, ImageBackground, ViewStyle } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ReactNode } from 'react';
@@ -7,9 +7,11 @@ interface ButtonProps {
   onPress: () => void;
   text: string | ReactNode;
   disabled?: boolean;
+  backgroundImage?: any;
+  style?: ViewStyle;
 }
 
-export function Button({ onPress, text, disabled }: ButtonProps) {
+export function Button({ onPress, text, disabled, backgroundImage, style }: ButtonProps) {
   const backgroundColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
   const pressedBackgroundColor = useThemeColor({ light: '#0051A8', dark: '#0060BC' }, 'tabIconSelected');
   const isMinor = typeof text !== 'string';
@@ -25,12 +27,35 @@ export function Button({ onPress, text, disabled }: ButtonProps) {
     return text;
   };
 
+  if (backgroundImage) {
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        style={({ pressed }) => [
+          styles.button,
+          style,
+          isMinor && styles.minorButton,
+          disabled && styles.disabled
+        ]}>
+        <ImageBackground 
+          source={backgroundImage}
+          style={[styles.backgroundImage, { width: style?.width || '100%' }]}
+          resizeMode="stretch"
+        >
+          {renderContent()}
+        </ImageBackground>
+      </Pressable>
+    );
+  }
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
+        style,
         isMinor ? styles.minorButton : { backgroundColor: pressed ? pressedBackgroundColor : backgroundColor },
         disabled && styles.disabled
       ]}>
@@ -57,10 +82,21 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 20,
+    fontWeight: 'normal',
+    fontFamily: 'PixelifySans-Regular',
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 2,
   },
   disabled: {
     opacity: 0.5,
+  },
+  backgroundImage: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
 });
