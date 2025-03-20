@@ -10,6 +10,7 @@ import Slider from '@react-native-community/slider';
 import { ChevronLeft } from '@/components/icons/ChevronLeft';
 import { MapArrow } from '@/components/icons/MapArrow';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { LinearGradient }from 'expo-linear-gradient';
 
 const METERS_TO_MILES = 0.000621371;
 
@@ -111,6 +112,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
+      <LinearGradient colors={['white', 'rgba(187, 208, 234, 0.6)']} style={styles.gradientContainer}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">🍽️ Wheel of Meals</ThemedText>
       </ThemedView>
@@ -203,6 +205,7 @@ export default function HomeScreen() {
           </View>
         </ThemedView>
       )}
+      </LinearGradient>
     </ThemedView>
   );
 }
@@ -210,11 +213,15 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  gradientContainer: {
+    flex: 1,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   titleContainer: {
+    backgroundColor: 'transparent',
     alignItems: 'center',
     marginBottom: 24,
   },
@@ -253,6 +260,7 @@ const styles = StyleSheet.create({
     gap: 16,
     marginTop: 8,
     marginBottom: 20,
+    backgroundColor: 'transparent',
   },
   detail: {
     textAlign: 'center',
@@ -281,6 +289,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   openStatus: {
     fontSize: 16,
