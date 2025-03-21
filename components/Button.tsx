@@ -1,25 +1,26 @@
-import { Pressable, StyleSheet, ImageBackground, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, ImageBackground, ViewStyle, TextStyle, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { ReactNode } from 'react';
 
 interface ButtonProps {
   onPress: () => void;
-  text: string | ReactNode;
+  text: string | ReactNode | number;
   disabled?: boolean;
   backgroundImage?: any;
   style?: ViewStyle;
+  textStyle?: TextStyle;
 }
 
-export function Button({ onPress, text, disabled, backgroundImage, style }: ButtonProps) {
+export function Button({ onPress, text, disabled, backgroundImage, style, textStyle }: ButtonProps) {
   const backgroundColor = useThemeColor({ light: '#007AFF', dark: '#0A84FF' }, 'tint');
   const pressedBackgroundColor = useThemeColor({ light: '#0051A8', dark: '#0060BC' }, 'tabIconSelected');
   const isMinor = typeof text !== 'string';
 
   const renderContent = () => {
-    if (typeof text === 'string') {
+    if (typeof text === 'string' || typeof text === 'number') {
       return (
-        <ThemedText style={styles.text}>
+        <ThemedText style={[styles.text, textStyle]}>
           {text}
         </ThemedText>
       );
@@ -55,8 +56,7 @@ export function Button({ onPress, text, disabled, backgroundImage, style }: Butt
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
-        style,
-        isMinor ? styles.minorButton : { backgroundColor: pressed ? pressedBackgroundColor : backgroundColor },
+        isMinor ? styles.minorButton : style,
         disabled && styles.disabled
       ]}>
       {renderContent()}

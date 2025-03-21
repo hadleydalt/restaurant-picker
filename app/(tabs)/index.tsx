@@ -1,4 +1,4 @@
-import { StyleSheet, View, Linking, Text, Image } from 'react-native';
+import { StyleSheet, View, Linking, Text, Image, Pressable } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button } from '@/components/Button';
@@ -123,7 +123,7 @@ export default function HomeScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <LinearGradient colors={['white', 'rgba(187, 208, 234, 0.6)']} style={styles.gradientContainer}>
+      <LinearGradient colors={['white', !selectedRestaurant ? 'rgba(187, 208, 234, 0.6)' : 'white']} style={styles.gradientContainer}>
       {!selectedRestaurant && (
         <>
           <View style={styles.imageContainer}>
@@ -177,48 +177,13 @@ export default function HomeScreen() {
       )}
 
       {selectedRestaurant && (
-        <ThemedView style={styles.resultContainer}>
-          {selectedRestaurant.photoReference && getPhotoUrl(selectedRestaurant.photoReference) && (
-            <Image
-              source={{ uri: getPhotoUrl(selectedRestaurant.photoReference) }}
-              style={styles.restaurantImage}
-              resizeMode="cover"
-            />
-          )}
-          <ThemedText type="subtitle" style={styles.restaurantName}>
-            {selectedRestaurant.name}
-          </ThemedText>
-          <ThemedText style={styles.detail}>
-            {selectedRestaurant.address}
-          </ThemedText>
-          <ThemedView style={styles.ratingContainer}>
-            <ThemedText style={styles.detail}>
-              Rating: {selectedRestaurant.rating}/5
-            </ThemedText>
-            <ThemedText style={styles.detail}>
-              Price: {selectedRestaurant.formattedPriceLevel}
-            </ThemedText>
-          </ThemedView>
-          <ThemedView style={styles.hoursContainer}>
-            <ThemedText style={[styles.detail, styles.openStatus]}>
-              {selectedRestaurant.isOpenNow ? '✓ Open now' : '✗ Closed'}
-            </ThemedText>
-            {getTodaysHours(selectedRestaurant.openingHours) ? (
-              <ThemedText style={styles.hours}>
-                Today: {getTodaysHours(selectedRestaurant.openingHours)}
-              </ThemedText>
-            ) : (
-              <ThemedText style={styles.hours}>
-                Hours not available
-              </ThemedText>
-            )}
-          </ThemedView>
-          <View style={styles.buttonContainer}>
+        <>
+          <View style={[styles.buttonContainer, { marginTop: 0, paddingTop: 70 }]}>
             <View style={styles.buttonRow}>
               <View style={styles.backButtonContainer}>
                 <Button 
                   onPress={() => setSelectedRestaurant(null)}
-                  text={<ChevronLeft size={28} color={backgroundColor} />}
+                  text={<Image source={require('../../assets/images/Back.png')} style={{width: 35, height: 35}} />}
                   disabled={loading}
                 />
               </View>
@@ -226,17 +191,90 @@ export default function HomeScreen() {
                 onPress={handleTryAgain}
                 text="Try Another"
                 disabled={loading}
+                textStyle={{ color: '#444547', textShadowColor: 'transparent', fontSize: 25 }}
               />
               <View style={styles.mapButtonContainer}>
                 <Button 
                   onPress={() => selectedRestaurant && openInMaps(selectedRestaurant)}
-                  text={<MapArrow size={28} color={backgroundColor} />}
+                  text={<Image source={require('../../assets/images/Map.png')} style={{width: 28, height: 28}} />}
                   disabled={loading}
                 />
               </View>
             </View>
           </View>
-        </ThemedView>
+
+          <ThemedView style={styles.resultContainer}>
+            {selectedRestaurant.photoReference && getPhotoUrl(selectedRestaurant.photoReference) && (
+              <View style={styles.topResultContainer}>
+                <Image
+                  source={{ uri: getPhotoUrl(selectedRestaurant.photoReference) }}
+                  style={styles.restaurantImage}
+                  resizeMode="cover"
+                />
+              </View>
+            )}
+            <LinearGradient colors={['rgba(187, 208, 234, 0.6)', 'rgba(187, 208, 234, 1)']} style={styles.infoCard}>
+              <ThemedText type="subtitle" style={styles.restaurantName}>
+                {selectedRestaurant.name}
+              </ThemedText>
+              <ThemedView style={styles.hoursContainer}>
+                <View style={styles.statusContainer}>
+                  <Image 
+                    source={selectedRestaurant.isOpenNow ? 
+                      require('../../assets/images/Open.png') : 
+                      require('../../assets/images/Closed.png')} 
+                    style={styles.statusIcon}
+                  />
+                  <ThemedText style={[styles.detail, styles.openStatus]}>
+                    {selectedRestaurant.isOpenNow ? 'OPEN' : 'CLOSED'}
+                  </ThemedText>
+                </View>
+                {getTodaysHours(selectedRestaurant.openingHours) ? (
+                  <ThemedText style={styles.hours}>
+                    Today: {getTodaysHours(selectedRestaurant.openingHours)}
+                  </ThemedText>
+                ) : (
+                  <ThemedText style={styles.hours}>
+                    Hours not available
+                  </ThemedText>
+                )}
+              </ThemedView>
+              <ThemedView style={styles.ratingContainer}>
+                <View style={styles.ratingCard}>
+                  <View style={styles.ratingCardContent}>
+                    <Image 
+                      source={require('../../assets/images/Rating.png')}
+                      style={styles.ratingIcon}
+                    />
+                    <ThemedText style={[styles.detail, styles.ratingText]}>
+                      Rating: {selectedRestaurant.rating}/5
+                    </ThemedText>
+                  </View>
+                </View>
+                <View style={styles.ratingCard}>
+                  <View style={styles.ratingCardContent}>
+                    <Image 
+                      source={require('../../assets/images/Price.png')}
+                      style={styles.ratingIcon}
+                    />
+                    <ThemedText style={[styles.detail, styles.ratingText]}>
+                      Price: {selectedRestaurant.formattedPriceLevel}
+                    </ThemedText>
+                  </View>
+                </View>
+              </ThemedView>
+              <Pressable 
+                onPress={() => selectedRestaurant && openInMaps(selectedRestaurant)}
+                style={styles.addressCard}
+              >
+                <ThemedText style={[styles.detail, styles.addressText]}>
+                  {selectedRestaurant.address}
+                </ThemedText>
+              </Pressable>
+              </LinearGradient>
+            {/*</View>*/}
+          </ThemedView>
+        </>
       )}
       </LinearGradient>
     </ThemedView>
@@ -250,7 +288,7 @@ const styles = StyleSheet.create({
   gradientContainer: {
     flex: 1,
     width: '100%',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   titleContainer: {
@@ -286,24 +324,67 @@ const styles = StyleSheet.create({
     fontFamily: 'PixelifySans-Regular',
   },
   resultContainer: {
+    flex: 1,
     alignItems: 'center',
     width: '100%',
-    padding: 20,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingTop: 20,
+  },
+  topResultContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '35%',
+  },
+  infoCard: {
+    width: '100%',
+    padding: 32,
+    paddingBottom: 40,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: 'rgba(187, 208, 234, 0.6)',
+    alignItems: 'center',
+    height: '75%'
   },
   restaurantName: {
-    marginBottom: 8,
+    marginBottom: 16,
     textAlign: 'center',
     fontFamily: 'PixelifySans-Regular',
+    fontWeight: 'normal',
+    fontSize: 30,
+    color: 'white',
+    textShadowColor: 'rgba(0, 0, 0, 0.7)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   ratingContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 16,
-    marginTop: 8,
-    marginBottom: 20,
+    marginTop: 16,
+    marginBottom: 24,
     backgroundColor: 'transparent',
+  },
+  ratingCard: {
+    backgroundColor: 'white',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 2,
+    borderColor: '#647B93',
+  },
+  ratingCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  ratingIcon: {
+    width: 25,
+    height: 25,
   },
   detail: {
     textAlign: 'center',
@@ -313,13 +394,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 8,
+    paddingHorizontal: 20,
   },
   buttonRow: {
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'center',
-    position: 'relative',
   },
   backButtonContainer: {
     position: 'absolute',
@@ -332,28 +412,40 @@ const styles = StyleSheet.create({
   hoursContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 24,
     backgroundColor: 'transparent',
   },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  statusIcon: {
+    width: 25,
+    height: 25,
+  },
   openStatus: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
+    fontSize: 25,
+    fontWeight: 'normal',
+    marginBottom: 4,
     fontFamily: 'PixelifySans-Regular',
+    color: '#444547',
   },
   hours: {
-    fontSize: 14,
-    opacity: 0.8,
+    fontSize: 20,
+    color: '#647B93',
     marginVertical: 2,
     fontFamily: 'PixelifySans-Regular',
+    paddingTop: 10,
   },
   restaurantImage: {
-    width: '100%',
+    width: '80%',
     height: 200,
     borderRadius: 8,
     marginBottom: 16,
   },
   imageContainer: {
+    marginTop: '30%',
     position: 'relative',
     width: 200,
     height: 200,
@@ -372,5 +464,28 @@ const styles = StyleSheet.create({
     position: 'absolute',
     alignSelf: 'center',
     top: '10%',
+  },
+  ratingText: {
+    color: '#444547',
+    fontSize: 18,
+  },
+  addressCard: {
+    backgroundColor: '#647B93',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#444547',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: '100%',
+  },
+  addressText: {
+    fontSize: 18,
+    fontWeight: 'normal',
+    color: 'white',
   },
 });
